@@ -17,7 +17,7 @@ def get_pokemon_data(pokemon):
 
 # Funcion para generar un número aleatorio entre 1 y 890
 def get_random_pokemon_id():
-    random_id = random.randint(1, 890)
+    random_id = random.randint(1, 1025)
     return get_pokemon_data(str(random_id))
 
 
@@ -27,12 +27,11 @@ data = get_random_pokemon_id()
 
 # Desplegar la información del pokemon
 if data:
-    st.subheader(f"Nombre: {data['name'].capitalize()}")
-    st.image(data['sprites']['front_default'], width=200)
-    st.image(data['sprites']['back_default'], width=200)
-    st.write(f"ID: {data['id']}")
-    st.write(f"Altura: {data['height']}")
-    st.write(f"Peso: {data['weight']}")
-    st.write("Tipos:")
-    for type_info in data['types']:
-        st.write(f"- {type_info['type']['name'].capitalize()}")
+   st.image(data['sprites']['other']['showdown']['front_default']) 
+   st.header(f"¿Quien es este pokemon? = {data['name'].upper()}")
+   st.subheader(f"Su Id es: {data['id']}")
+   for ability in data['abilities']:
+       st.write(f"Su habilidad es: {ability['ability']['name']}")
+   st.image(data['sprites']['other']['official-artwork']['front_default']) 
+   for type in data['types']:
+       st.write(f"Su tipo es: {type['type']['name']}")
