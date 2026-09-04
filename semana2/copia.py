@@ -3,7 +3,7 @@ import random
 import requests
 
 # Configuración de la página (debe ser el primer comando de Streamlit)
-st.set_page_config(page_title="Pokédex Pro", page_icon="🔴", layout="centered")
+st.set_page_config(page_title="Pokédex Pro", page_icon="🔴", layout="wide")
 
 def get_pokemon_data(pokemon):
     try:
@@ -15,6 +15,10 @@ def get_pokemon_data(pokemon):
         st.error(f"Error al consumir la API: {e}")
         return None
 
+def get_detalles(idpokemon):
+    res = requests.get(f"https://pokeapi.co/api/v2/pokemon-species/{idpokemon}").json()
+    return res
+    
 def get_random_pokemon_id():
     # La API actual tiene más de 1000 Pokémon, lo dejamos en 890 según tu código
     random_id = random.randint(1, 1025)
@@ -46,10 +50,11 @@ if data:
     st.divider() # Línea divisoria elegante
     
     # Encabezado con Nombre e ID
-    st.header(f"{data['name'].capitalize()} #{data['id']}")
+    st.header(f"{data['name'].capitalize()}, Pokemon # {data['id']}")
+    details = get_detalles(str(data['id']))
     
     # Organización en pestañas
-    tab1, tab2, tab3 = st.tabs(["📊 Resumen", "⚔️ Estadísticas Base", "⚔️ Movimientos"])
+    tab1, tab2, tab3 = st.tabs(["📊 Resumen", "⚔️ Estadísticas Base", "📱 Descripción"])
     
     with tab1:
         img_col, info_col = st.columns([1, 1.5])
@@ -94,8 +99,34 @@ if data:
             st.progress(progress_value)
 
     with tab3:
-        st.write("### Movimientos")
+        st.write("### Descripción")
 
-elif data is False:
-    st.error("Pokémon no encontrado. Verifica el nombre o ID.")
-        
+        col1, col2 = st.columns([1, 2])
+
+        with col1:
+            # Imagen oficial de alta calidad
+            img_url = data['sprites']['other']['showdown']['front_shiny']
+            if img_url:
+                st.image(img_url)
+            else:
+                st.warning("Imagen animada no disponible.")
+
+        with col2:
+            if details and 'flavor_text_entries' in details:
+                # Buscar la primera entrada en español
+                texto_es = next(
+                    (entry['flavor_text'] for entry in details['flavor_text_entries'] if entry['language']['name'] == 'es'), 
+                    None
+                )
+                
+                # Si no hay en español, buscar en inglés como respaldo
+                if not texto_es:
+                    texto_es = next(
+                        (entry['flavor_text'] for entry in details['flavor_text_entries'] if entry['language']['name'] == 'en'), 
+                        "Sin descripción disponible."
+                    )
+
+                    st.write(texto_es.replace("\n", " ").replace("\f", " "))
+                else:
+                    st.info("No se encontró información descriptiva para este Pokémon.")
+
