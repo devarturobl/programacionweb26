@@ -100,11 +100,9 @@ if data:
 
     with tab3:
         st.write("### Descripción")
-
         col1, col2 = st.columns([1, 2])
 
         with col1:
-            # Imagen oficial de alta calidad
             img_url = data['sprites']['other']['showdown']['front_shiny']
             if img_url:
                 st.image(img_url)
@@ -113,20 +111,24 @@ if data:
 
         with col2:
             if details and 'flavor_text_entries' in details:
-                # Buscar la primera entrada en español
+                # 1. Buscar la primera entrada en español
                 texto_es = next(
                     (entry['flavor_text'] for entry in details['flavor_text_entries'] if entry['language']['name'] == 'es'), 
                     None
                 )
                 
-                # Si no hay en español, buscar en inglés como respaldo
+                # 2. Respaldo: si no existe en español, buscar en inglés
                 if not texto_es:
                     texto_es = next(
                         (entry['flavor_text'] for entry in details['flavor_text_entries'] if entry['language']['name'] == 'en'), 
-                        "Sin descripción disponible."
+                        None
                     )
 
-                    st.write(texto_es.replace("\n", " ").replace("\f", " "))
+                # 3. Mostrar el texto encontrado (o advertencia si de verdad no hay)
+                if texto_es:
+                    descripcion_limpia = texto_es.replace("\n", " ").replace("\f", " ")
+                    st.write(descripcion_limpia)
                 else:
-                    st.info("No se encontró información descriptiva para este Pokémon.")
-
+                    st.info("No se encontró descripción para este Pokémon.")
+            else:
+                st.warning("No se pudieron cargar los detalles de la especie.")
