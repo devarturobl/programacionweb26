@@ -2,6 +2,23 @@ import requests
 import streamlit as st
 import base64
 
+# Inicializar el estado de la página si no existe
+if "page" not in st.session_state:
+    st.session_state.page = 1
+
+def siguiente():
+    st.session_state.page += 1
+
+def anterior():
+    st.session_state.page -= 1
+
+def consumirapi(page):
+    response = requests.get(f"https://thesimpsonsapi.com/api/characters?page={page}")
+    data = response.json()
+    return data.get("results", [])
+
+personajes = consumirapi(st.session_state.page)
+
 # Funcion para poner una imagen de background
 def set_background(image_file):
     with open(image_file, "rb") as f:
@@ -28,6 +45,8 @@ set_background("assets/background.jpg")
 
 # Configutar pagina
 st.set_page_config(page_title="The Simpsom APi", layout="wide")
+
+
 
 # Estilos
 st.markdown("""
@@ -112,9 +131,13 @@ st.markdown("""
 
 st.markdown('<div class="simpsons-title">The Simpsom API Personajes</div>', unsafe_allow_html=True)
 
-response = requests.get("https://thesimpsonsapi.com/api/characters")
-data = response.json()
-personajes = data.get("results", [])
+col1, col2 = st.columns(2)
+
+with col1:
+    adelante = st.button("Pagina Siguiente", on_click=siguiente)
+
+with col2:
+    atras = st.button("Pagina Anterior", on_click=anterior)
 
 columnas = st.columns(3)
 
@@ -122,7 +145,7 @@ for i, p in enumerate(personajes):
     col = columnas[i % 3]
     img_url = f"https://cdn.thesimpsonsapi.com/500{p.get('portrait_path', '')}"
     nombre = p.get('name', 'Desconocido')
-    edad = f"{p.get('age', '?')} años"
+    edad = p.get('age', '?')
     ocupacion = p.get('occupation', "Sin Registro")
 
     with col:
@@ -132,7 +155,7 @@ for i, p in enumerate(personajes):
                     <img src="{img_url}" alt="{nombre}">
                 </div>
                 <div class="simpson-name">{nombre}</div>
-                <div class="simpson-badge>{edad}</div>
-                <div class="simpson-occ>{ocupacion}</div>
+                <div class="simpson-badge">{edad}</div>
+                <div class="simpson-occ">{ocupacion}</div>
             </div>
         """, unsafe_allow_html=True)

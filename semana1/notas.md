@@ -13,8 +13,6 @@ https://www.markdownguide.org/
 # Ejecutar streamlit
 `streamlit run main.py`
 
-
-
 # Documentación Stremlit
 https://docs.streamlit.io/
 https://docs.streamlit.io/develop/api-reference
