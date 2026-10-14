@@ -17,6 +17,8 @@ supabase: Client = create_client(url, key)
 #except Exception as e:
 #    print("Error al conectar con Supabase:", e)
 
+st.set_page_config(layout="wide")
+
 st.title("Crud con Supabase y Streamlit")
 
 def get_datos():
@@ -37,7 +39,7 @@ if datos:
         datosfilas, 
         use_container_width=True,
         hide_index=True,
-        column_order= ["id", "nombre", "detalle"],
+        column_order= ["id", "nombre", "detalle", "estatus"],
         column_config={
             "id": st.column_config.NumberColumn(
                 "ID",
@@ -54,6 +56,9 @@ if datos:
                 "Detalles",
                 help="Detalle de la tarea",
                 width="large"
+            ),
+            "estatus": st.column_config.CheckboxColumn(
+                "Estatus",
             )
         }
     )
