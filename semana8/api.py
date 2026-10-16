@@ -1,6 +1,15 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Body
 
 app = FastAPI()
+
+
+alumnos = [
+    {"id": 1, "nombre": "José Arturo Bustamante Lazcano", "edad": 22, "carrera": "Ingeniería en Inteligencia Artificial"},
+    {"id": 2, "nombre": "Juan Pérez", "edad": 21, "carrera": "Ingeniería en Sistemas"},
+    {"id": 3, "nombre": "María López", "edad": 23, "carrera": "Ingeniería en Software"},
+    {"id": 4, "nombre": "Ana García", "edad": 20, "carrera": "Ingeniería en Datos"},
+    {"id": 5, "nombre": "Luis Martínez", "edad": 24, "carrera": "Ingeniería en Robótica"}
+]
 
 @app.get("/")
 def data_info():
@@ -630,3 +639,38 @@ def data_movie(id: int):
         if movie["id"] == id:
             return movie
     return {"error": "Movie not found"}
+
+
+
+#Nuevo endpoint para alumnos y operacione CRUD
+@app.get("/alumnos")
+def get_alumnos():
+    return alumnos
+
+
+
+# {"id": 1, "nombre": "José Arturo Bustamante Lazcano", "edad": 22, "carrera": "Ingeniería en Inteligencia Artificial"},
+
+# Presentacion 1 Formulario
+@app.post("/alumnos", tags=["ADD Alumno"])
+def create_alumno(id: int, nombre: str, edad: int, carrera: str):
+    new_alumno = {"id": id, "nombre": nombre, "edad": edad, "carrera": carrera}
+    alumnos.append(new_alumno)
+    return new_alumno
+    
+# Presentacion 2 Body JSON
+@app.post("/alumnos/body", tags=["ADD Alumno Body"])
+def create_alumno_body(
+    id: int = Body(),
+    nombre: str = Body(),
+    edad: int = Body(),
+    carrera: str = Body()
+    ):
+    alumnos.append(
+        {
+            "id": id, 
+            "nombre": nombre, 
+            "edad": edad, 
+            "carrera": carrera
+        }
+    )
